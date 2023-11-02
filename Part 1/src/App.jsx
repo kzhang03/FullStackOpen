@@ -16,7 +16,7 @@ const Button = ({ title, handler}) => {
   )
 }
 
-const Statistic = ({ name,val}) => {
+const Statistic = ({ name, val}) => {
   return (
     <div>
       {name} {val}
@@ -29,17 +29,33 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+  const [all, setAll] = useState(0)
+  const [average, setAverage] = useState(0)
+  const [positive, setPositive] = useState(0)
 
   const increaseGood = () => {
-    setGood(good + 1)
+    const newGood = good + 1
+    const newAll = all + 1
+    setGood(newGood)
+    setAll(newAll)
+    setAverage((newGood - bad) / newAll)
+    setPositive((newGood / newAll) * 100)
   }
-
+  
   const increaseNeutral = () => {
+    const newAll = all + 1
     setNeutral(neutral + 1)
+    setAll(newAll)
+    setPositive((good / newAll) * 100)
   }
-
+  
   const increaseBad = () => {
-    setBad(bad + 1)
+    const newBad = bad + 1
+    const newAll = all + 1
+    setBad(newBad)
+    setAll(newAll)
+    setAverage((good - newBad) / newAll)
+    setPositive((good / newAll) * 100)
   }
 
   return (
@@ -52,6 +68,9 @@ const App = () => {
       <Statistic name="good" val={good} />
       <Statistic name="neutral" val={neutral} />
       <Statistic name="bad" val={bad} />
+      <Statistic name="all" val={all} />
+      <Statistic name="average" val={average} />
+      <Statistic name="positive" val={positive} />
     </div>
   )
 }
