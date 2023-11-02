@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+<<<<<<< Updated upstream
 const Header = ( {name} ) => {
   return (
     <div>
@@ -20,6 +21,33 @@ const DisplayFeedback = ( {alignment, counter} ) => {
   return (
     <div>
       <pre>{alignment} {counter}</pre>
+=======
+const Title = ({ title }) => {
+  return <h1>{title}</h1>
+}
+
+const Button = ({ title, handler }) => {
+  return <button onClick={handler}>{title}</button>
+}
+
+const StatisticLine = ({ text, value}) => {
+  return <div>{text} {value}</div>
+}
+
+const Statistic = ({ stats }) => {
+  const totalFeedback = stats[0] + stats[1] + stats[2]
+
+  if (totalFeedback === 0) return <div>No feedback given</div>
+  
+  return (
+    <div>
+      <StatisticLine text="good" value={stats[0]} />
+      <StatisticLine text="neutral" value={stats[1]} />
+      <StatisticLine text="bad" value={stats[2]} />
+      <StatisticLine text="all" value={stats[3]} />
+      <StatisticLine text="average" value={stats[4]} />
+      <StatisticLine text="positive" value={stats[5]} />
+>>>>>>> Stashed changes
     </div>
   )
 }
@@ -31,10 +59,35 @@ const App = () => {
   const [bad, setBad] = useState(0)
   const [all, setAll] = useState(0)
 
+<<<<<<< Updated upstream
   const handleGood = () => {
     setGood(good => good + 1)
     setAll(all => all + 1)
   }
+=======
+  const increaseGood = () => {
+    setGood(good + 1)
+  };
+
+  const increaseNeutral = () => {
+    setNeutral(neutral + 1)
+  };
+
+  const increaseBad = () => {
+    setBad(bad + 1)
+  };
+
+  const totalFeedback = good + neutral + bad
+  const average = totalFeedback ? (good - bad) / totalFeedback : 0
+  const positive = totalFeedback ? (good / totalFeedback) * 100 : 0
+
+  const statistics = [good,
+                      neutral,
+                      bad,
+                      totalFeedback,
+                      average,
+                      positive]
+>>>>>>> Stashed changes
 
   const handleNeutral = () => {
     setNeutral(neutral => neutral + 1)
