@@ -9,6 +9,26 @@ const DisplayNames = ({ persons, keyword }) => {
   )
 }
 
+const Filter = ({ newSearch, filterName }) => {
+  return (
+    <form>
+      <div>filter shown with <input value={newSearch} onChange={filterName}/></div>
+    </form>
+  )
+}
+
+const PersonForm = ({ addNumber, newName, newNumber, nameChange, numberChange }) => {
+  return (
+    <form onSubmit={addNumber}>
+        <div> name: <input value={newName} onChange={nameChange}/> </div>
+        <div> number: <input value={newNumber} onChange={numberChange}/></div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-1234567' }
@@ -46,17 +66,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form>
-        <div>filter shown with <input value={newSearch} onChange={filterName}/></div>
-      </form>
+      <Filter newSearch={newSearch} filterName={filterName} />
       <h2>add a new</h2>
-      <form onSubmit={addNumber}>
-        <div> name: <input value={newName} onChange={nameChange}/> </div>
-        <div> number: <input value={newNumber} onChange={numberChange}/></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm addNumber={addNumber} newName={newName} newNumber={newNumber} nameChange={nameChange} numberChange={numberChange}/>
       <h2>Numbers</h2>
       <DisplayNames persons={persons} keyword={newSearch}/>
     </div>
