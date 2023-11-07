@@ -1,5 +1,18 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import './App.css'
+
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='notification'>
+      {message}
+    </div>
+  )
+}
 
 const DeleteButton = ({ id, name, deletePerson }) => {
   const onClick = () => {
@@ -49,6 +62,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   const hook = () => {
     personService
@@ -90,6 +104,7 @@ const App = () => {
     if (isDuplicate) {
       if (window.confirm(`${isDuplicate.name} is already added to phonebook, replace old number with a new one?`)) {
         editPerson(isDuplicate.id, newPerson)
+        setSuccessMessage(`Added ${newPerson.name}`)
       }
     }
     else {
@@ -98,6 +113,7 @@ const App = () => {
        .create(newPerson)
        .then(response => {
           setPersons(persons.concat(newPerson)) 
+          setSuccessMessage(`Added ${newPerson.name}`)
        })
     }
     setNewName('')
@@ -119,6 +135,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successMessage}/>
       <Filter newSearch={newSearch} filterName={filterName} />
       <h2>add a new</h2>
       <PersonForm addNumber={addNumber} newName={newName} newNumber={newNumber} nameChange={nameChange} numberChange={numberChange} />
