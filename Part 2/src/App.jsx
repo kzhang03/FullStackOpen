@@ -1,13 +1,26 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
 
-const DisplayNames = ({ persons, keyword }) => {
+const DeleteButton = ({ id, name, deletePerson }) => {
+  const onClick = () => {
+    if (window.confirm(`Delete ${name}?`)) {
+      deletePerson(id)
+    }
+  }
+  return (
+    <button onClick={onClick}>Delete</button>
+  )
+}
+
+const DisplayNames = ({ persons, keyword, deletePerson }) => {
   const filteredPersons = keyword === '' ? persons : persons.filter(person =>
     person.name.toLowerCase().includes(keyword.toLowerCase())
   )
   return (
-    filteredPersons.map((person, i) => <div key={i}>{person.name} {person.number}</div>)
+    filteredPersons.map((person, i) => 
+      <div key={i}>{person.name} {person.number} 
+      <DeleteButton id={person.id} name={person.name} deletePerson={deletePerson}/></div>
+    )
   )
 }
 
@@ -22,12 +35,12 @@ const Filter = ({ newSearch, filterName }) => {
 const PersonForm = ({ addNumber, newName, newNumber, nameChange, numberChange }) => {
   return (
     <form onSubmit={addNumber}>
-        <div> name: <input value={newName} onChange={nameChange}/> </div>
-        <div> number: <input value={newNumber} onChange={numberChange}/></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <div> name: <input value={newName} onChange={nameChange}/> </div>
+      <div> number: <input value={newNumber} onChange={numberChange}/></div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
   )
 }
 
@@ -47,6 +60,14 @@ const App = () => {
   }
 
   useEffect(hook, [])
+
+  const deletePerson  = (id) => {
+    personService
+    .deletePerson(id)
+    .then(() => {
+      setPersons(persons.filter(person => person.id !== id))
+    })
+  }
 
   const addNumber = (event) => {
     event.preventDefault()
@@ -90,7 +111,7 @@ const App = () => {
       <h2>add a new</h2>
       <PersonForm addNumber={addNumber} newName={newName} newNumber={newNumber} nameChange={nameChange} numberChange={numberChange}/>
       <h2>Numbers</h2>
-      <DisplayNames persons={persons} keyword={newSearch}/>
+      <DisplayNames persons={persons} keyword={newSearch} deletePerson={deletePerson}/>
     </div>
   )
 }
