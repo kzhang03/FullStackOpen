@@ -49,13 +49,22 @@ const App = () => {
 
   const addNumber = (event) => {
     event.preventDefault()
-    const newPerson = { name: newName, number: newNumber }
+    const newPerson = { 
+      name: newName, 
+      number: newNumber,
+      id: persons.length > 0 ? Math.max(...persons.map(p => p.id)) + 1 : 1 
+    }
     const isDuplicate = persons.some(person => person.name === newPerson.name)
     if (isDuplicate) {
       alert(`${newPerson.name} is already added to phonebook`)
     }
     else {
-      setPersons(persons.concat(newPerson)) 
+      event.preventDefault()
+      axios
+       .post('http://localhost:3001/persons', newPerson)
+       .then(response => {
+          setPersons(persons.concat(newPerson)) 
+       })
     }
     setNewName('')
     setNewNumber('')
