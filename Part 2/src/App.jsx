@@ -61,12 +61,22 @@ const App = () => {
 
   useEffect(hook, [])
 
-  const deletePerson  = (id) => {
+  const deletePerson = (id) => {
     personService
     .deletePerson(id)
     .then(() => {
       setPersons(persons.filter(person => person.id !== id))
     })
+  }
+
+  const editPerson = (id, edit) => {
+    personService
+     .edit(id, edit)
+     .then(() => {
+      setPersons(prevPersons => 
+        prevPersons.map(person => 
+          person.id === id ? edit : person))
+     })
   }
 
   const addNumber = (event) => {
@@ -76,9 +86,11 @@ const App = () => {
       number: newNumber,
       id: persons.length > 0 ? Math.max(...persons.map(p => p.id)) + 1 : 1 
     }
-    const isDuplicate = persons.some(person => person.name === newPerson.name)
+    const isDuplicate = persons.find(person => person.name === newPerson.name)
     if (isDuplicate) {
-      alert(`${newPerson.name} is already added to phonebook`)
+      if (window.confirm(`${isDuplicate.name} is already added to phonebook, replace old number with a new one?`)) {
+        editPerson(isDuplicate.id, newPerson)
+      }
     }
     else {
       event.preventDefault()
@@ -109,7 +121,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter newSearch={newSearch} filterName={filterName} />
       <h2>add a new</h2>
-      <PersonForm addNumber={addNumber} newName={newName} newNumber={newNumber} nameChange={nameChange} numberChange={numberChange}/>
+      <PersonForm addNumber={addNumber} newName={newName} newNumber={newNumber} nameChange={nameChange} numberChange={numberChange} />
       <h2>Numbers</h2>
       <DisplayNames persons={persons} keyword={newSearch} deletePerson={deletePerson}/>
     </div>
