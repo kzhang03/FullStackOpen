@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import personService from './services/persons'
 
 const DisplayNames = ({ persons, keyword }) => {
   const filteredPersons = keyword === '' ? persons : persons.filter(person =>
@@ -37,8 +38,8 @@ const App = () => {
   const [newSearch, setNewSearch] = useState('')
 
   const hook = () => {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll('http://localhost:3001/persons')
       .then(response => {
         const dbPerson = response.data
         setPersons(dbPerson)
@@ -60,8 +61,8 @@ const App = () => {
     }
     else {
       event.preventDefault()
-      axios
-       .post('http://localhost:3001/persons', newPerson)
+      personService
+       .create(newPerson)
        .then(response => {
           setPersons(persons.concat(newPerson)) 
        })
