@@ -19,7 +19,7 @@ app.use((req, res, next) => {
   });
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
-app.use(CORS)
+app.use(CORS())
 
 let persons = [
     { 
