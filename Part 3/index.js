@@ -1,7 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const CORS = require('cors')
-require('dontenv').config()
+require('dotenv').config()
 const Person = require('./modules/person')
 const app = express()
 
