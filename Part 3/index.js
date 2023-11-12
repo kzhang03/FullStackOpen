@@ -23,20 +23,8 @@ app.use((req, res, next) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
 app.use(CORS())
 
-let persons = [
-    {
-        "name": "Anna",
-        "number": "040-123456"
-    },
-    { 
-      "name": "Arto Hellas", 
-      "number": "045-123456"
-    }
-]
-
 app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
-        console.log(persons)
         response.json(persons)
     })
 })
@@ -65,38 +53,23 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
-const generateId = () => {
-    const maxId = persons.length > 0
-        ? Math.max(...persons.map(n => n.id))
-        : 0
-
-    return maxId + 1
-}
-
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
-    if (!body.name) {
+    if (body.name === undefined) {
         return response.status(400).json({
             error: 'content missing'
         })
     }
 
-    if (persons.map(person => person.name).includes(body.name)) {
-        return response.status(400).json({
-            error: 'Name must be unique'
-        })
-    }
-
-    const person = {
-        id: generateId(),
+    const person = new Person({
         name: body.name,
         number: body.number
-    }
+    })
 
-    persons = persons.concat(person)
-
-    response.send(person)
+    person.save().then(savedPerson => {
+        response.send(savedPerson)
+    })
 })
 
 app.get('/', (req, res) => {
