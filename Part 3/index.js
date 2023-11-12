@@ -1,6 +1,8 @@
 const express = require('express')
 const morgan = require('morgan')
 const CORS = require('cors')
+require('dontenv').config()
+const Person = require('./modules/person')
 const app = express()
 
 morgan.token('post-data', (req, res) => {
@@ -45,7 +47,11 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(result => {
+        result.forEach(person => {
+            response.json(person)
+        })
+    })
 })
 
 app.get('/info', (request, response) => {
@@ -60,14 +66,9 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
+    Person.findById(request.params.id).then(person => {
         response.json(person)
-    }
-    else {
-        response.status(404).end()
-    }
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
