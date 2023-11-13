@@ -107,8 +107,8 @@ app.post('/api/persons', (request, response, next) => {
     }
 
     const person = new Person({
-        name: personName,
-        number: personNumber
+        name: name,
+        number: number
     })
 
     person.save()
