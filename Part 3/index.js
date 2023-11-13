@@ -5,12 +5,12 @@ require('dotenv').config()
 const Person = require('./modules/person')
 const app = express()
 
-morgan.token('post-data', (req, res) => {
+morgan.token('post-data', (req, _res) => {
     if (req.method === 'POST' && req.body) {
         console.log(req.body)
-      return JSON.stringify(req.body);
+      return JSON.stringify(req.body)
     }
-    return '';
+    return ''
 })
 
 const errorHandler = (error, request, response, next) => {
@@ -29,8 +29,8 @@ const errorHandler = (error, request, response, next) => {
 app.use(express.json())
 
 app.use((req, res, next) => {
-    console.log('Request Body:', req.body);
-    next();
+    console.log('Request Body:', req.body)
+    next()
 })
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
@@ -49,7 +49,7 @@ app.get('/info', (request, response) => {
     const timestamp = now.toString()
     Person.find({}).then(person => {
         const personLength = person.length
-        const responseContent = 
+        const responseContent =
         `<div>Phonebook has info for ${personLength} people</div>
         <br />
         <div>${timestamp}</div>`
@@ -71,7 +71,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndDelete(request.params.id)
-        .then(result => {
+        .then(() => {
             response.status(204).end()
         })
         .catch(error => next(error))
@@ -85,9 +85,9 @@ app.put('/api/persons/:id', (request, response, next) => {
         number: body.number
     }
 
-    Person.findByIdAndUpdate(request.params.id, 
-                             person, 
-                             { new: true, runValidators: true, context: 'query'})
+    Person.findByIdAndUpdate(request.params.id,
+                             person,
+                             { new: true, runValidators: true, context: 'query' })
         .then(updatedPerson => {
             response.json(updatedPerson)
         })
@@ -120,7 +120,7 @@ app.post('/api/persons', (request, response, next) => {
 })
 
 app.get('/', (req, res) => {
-    res.send('Welcome to my Express app!');
+    res.send('Welcome to my Express app!')
 })
 
 const PORT = 3001
