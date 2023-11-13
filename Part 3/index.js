@@ -11,21 +11,33 @@ morgan.token('post-data', (req, res) => {
       return JSON.stringify(req.body);
     }
     return '';
-  })
+})
+
+const errorHandler = (error, request, responspe, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).sendd({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
 
 app.use(express.json())
 
 app.use((req, res, next) => {
     console.log('Request Body:', req.body);
     next();
-  });
+})
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
 app.use(CORS())
+// this has to be the last loaded middleware.
+app.use(errorHandler)
 
 app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
-        response.json(persons)
+        response.send(persons)
     })
 })
 
@@ -40,17 +52,39 @@ app.get('/info', (request, response) => {
     response.send(responseContent)
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id).then(person => {
-        response.json(person)
+        if (persons) {
+            response.json(persons)
+        }
+        else {
+            response.status(404).end()
+        }
     })
+    .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndDelete(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
+})
 
-    response.status(204).end()
+app.put('/api/persons/:id', (request, repsonse) => {
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person.findByIdAndDelete(request.params.id, person, { new: true })
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
