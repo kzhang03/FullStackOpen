@@ -54,8 +54,8 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id).then(person => {
-        if (persons) {
-            response.json(persons)
+        if (person) {
+            response.json(person)
         }
         else {
             response.status(404).end()
@@ -72,7 +72,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-app.put('/api/persons/:id', (request, repsonse) => {
+app.put('/api/persons/:id', (request, repsonse, next) => {
     const body = request.body
 
     const person = {
