@@ -13,7 +13,7 @@ morgan.token('post-data', (req, res) => {
     return '';
 })
 
-const errorHandler = (error, request, responspe, next) => {
+const errorHandler = (error, request, response, next) => {
     console.error(error.message)
 
     if (error.name === 'CastError') {
@@ -74,7 +74,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-app.put('/api/persons/:id', (request, repsonse, next) => {
+app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body
 
     const person = {
@@ -99,12 +99,19 @@ app.post('/api/persons', (request, response, next) => {
     if (!number) {
         return response.status(400).json({ error: 'number missing' })
     }
+    
+    const person = new Person({
+        name: personName,
+        number: personNumber
+    })
 
-    Person.findOneAndUpdate({ number: number }, { name: name, number: number }, { new: true, upsert: true })
-        .then(updateOrNewPerson => {
-            response.json(updateOrNewPerson)
+    person.save()
+    .then(savedPerson =>  savedPerson.toJSON())
+    .then(savedAndFormattedPerson => {
+        console.log(`added ${person.name} number ${person.number} to phonebook`)
+        response.json(savedAndFormattedPerson)
         })
-        .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.get('/', (req, res) => {
