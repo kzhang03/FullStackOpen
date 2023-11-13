@@ -17,7 +17,7 @@ const errorHandler = (error, request, responspe, next) => {
     console.error(error.message)
 
     if (error.name === 'CastError') {
-        return response.status(400).sendd({ error: 'malformatted id' })
+        return response.status(400).send({ error: 'malformatted id' })
     }
 
     next(error)
@@ -42,14 +42,16 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-    const entries = persons.length
     const now = new Date()
     const timestamp = now.toString()
-    const responseContent = 
-        `<div>Phonebook has info for ${entries} people</div>
+    Person.find({}).then(person => {
+        const personLength = person.length
+        const responseContent = 
+        `<div>Phonebook has info for ${personLength} people</div>
         <br />
         <div>${timestamp}</div>`
-    response.send(responseContent)
+        response.send(responseContent)
+    })
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -80,30 +82,29 @@ app.put('/api/persons/:id', (request, repsonse, next) => {
         number: body.number
     }
 
-    Person.findByIdAndDelete(request.params.id, person, { new: true })
+    Person.findByIdAndUpdate(request.params.id, person, { new: true })
         .then(updatedPerson => {
             response.json(updatedPerson)
         })
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
-    const body = request.body
+app.post('/api/persons', (request, response, next) => {
+    const { name, number } = request.body
 
-    if (body.name === undefined) {
-        return response.status(400).json({
-            error: 'content missing'
-        })
+    if (!name) {
+        return response.status(400).json({ error: 'name missing' })
     }
 
-    const person = new Person({
-        name: body.name,
-        number: body.number
-    })
+    if (!number) {
+        return response.status(400).json({ error: 'number missing' })
+    }
 
-    person.save().then(savedPerson => {
-        response.send(savedPerson)
-    })
+    Person.findOneAndUpdate({ number: number }, { name: name, number: number }, { new: true, upsert: true })
+        .then(updateOrNewPerson => {
+            response.json(updateOrNewPerson)
+        })
+        .catch(error => next(error))
 })
 
 app.get('/', (req, res) => {
