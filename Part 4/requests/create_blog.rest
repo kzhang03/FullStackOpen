@@ -1,0 +1,9 @@
+POST https://part3-phonebook-syox.onrender.com/api/blogs
+Content-Type: application/json
+
+{
+    "title": "Test Title",
+    "author": "Author",
+    "url": "Test URL",
+    "likes": "1"
+}
